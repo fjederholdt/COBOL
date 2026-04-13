@@ -1,0 +1,38 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. OPGAVE4.
+
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 CUSTOMER-INFO.
+          02 CUSTOMER-ID PIC X(10) VALUE SPACES.
+          02 PERSONAL-INFO.
+             03 FIRSTNAME PIC X(20) VALUE SPACES.
+             03 LASTNAME PIC X(20) VALUE SPACES.
+             03 FULLNAME PIC X(40) VALUE SPACES.
+             03 AGE PIC 9(3) VALUE ZEROS.
+             03 ADDRESSES.
+                04 STREET PIC X(30) VALUE SPACES.
+                04 CITY PIC X(20) VALUE SPACES.
+                04 ZIPCODE PIC X(4) VALUE SPACES.
+          02 ACCOUNT-INFO.
+             03 ACCOUNT-NUMBER PIC X(20) VALUE SPACES.
+             03 ACCOUNT-BALANCE PIC 9(7)V99 VALUE ZEROS.
+             03 CURRENCY-CODE PIC X(3) VALUE SPACES.
+
+       PROCEDURE DIVISION.
+
+       MOVE "CUST-001" TO CUSTOMER-ID.
+       MOVE "John" TO FIRSTNAME.
+       MOVE "Doe" TO LASTNAME.
+       MOVE "ACC-001" TO ACCOUNT-NUMBER.
+       MOVE 1000.00 TO ACCOUNT-BALANCE.
+       MOVE "USD" TO CURRENCY-CODE.
+       STRING FIRSTNAME DELIMITED BY SPACE 
+              " " DELIMITED BY SIZE 
+              LASTNAME DELIMITED BY SPACE
+              INTO FULLNAME
+       END-STRING.
+      *Nedenfor kommer en display - Cobols måde at skrive i konsollen
+       DISPLAY "----------------------------------------"
+       DISPLAY CUSTOMER-INFO
+       STOP RUN.

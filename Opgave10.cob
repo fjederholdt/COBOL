@@ -1,0 +1,316 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. ReadWriteFile.
+
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT TRANSACTION-FILE ASSIGN TO "Transactions.txt"
+               ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT BANK-FILE ASSIGN TO "Banks.txt"
+               ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT OUTPUT-FILE ASSIGN TO "AccountPrint.txt"
+               ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT SORT-FILE ASSIGN TO SRT.
+
+       DATA DIVISION.
+       FILE SECTION.
+       FD TRANSACTION-FILE.
+       01 TRANSACTION-RECORD.
+           COPY "TRANSACTIONS.cpy".
+       
+       FD BANK-FILE.
+       01 BANK-RECORD.
+           COPY "BANKINFO.cpy".
+       FD OUTPUT-FILE.
+       01 OUTPUT-RECORD.
+           02 ACCOUNT-PRINT-INFO PIC X(100).
+
+       SD SORT-FILE.
+       01 SORT-RECORD.
+           COPY "TRANSACTIONS.cpy".
+
+       WORKING-STORAGE SECTION.
+       01 END-OF-TRANSACTION-FILE PIC X VALUE "N".
+       01 END-OF-BANK-FILE PIC X VALUE "N".
+       01 END-OF-SORT-FILE PIC X VALUE "N".
+       01 IX PIC 9(6) VALUE 1.
+       01 J PIC 9(3) VALUE 0.
+       01 BANK-INDEX PIC 9(3) VALUE 0.
+       01 DKK-NUMBER PIC S9(15)V99.
+       01 TRIMMED-DKK-NUMBER PIC ZZZ,ZZZ,ZZZ,ZZZ,ZZZ.99.
+       01 TRIMMED-DKK-NUMBER-STRING PIC X(17).
+       01 CURRENCY-NUMBER PIC S9(15)V99.
+       01 TRIMMED-CURRENCY-NUMBER PIC ZZZ,ZZZ,ZZZ,ZZZ,ZZZ.99.
+       01 TRIMMED-CURRENCY-NUMBER-STRING PIC X(17).
+       01 TOTAL-DEPOSITS PIC 9(15)V99 VALUE ZEROS.
+       01 TOTAL-DEPOSITS-STRING PIC ZZZ,ZZZ,ZZZ,ZZZ,ZZZ.99.
+       01 TOTAL-WITHDRAWALS PIC 9(15)V99 VALUE ZEROS.
+       01 TOTAL-WITHDRAWALS-STRING PIC ZZZ,ZZZ,ZZZ,ZZZ,ZZZ.99.
+       01 TOTAL-BALANCE PIC 9(15)V99 VALUE ZEROS.
+       01 TOTAL-BALANCE-STRING PIC ZZZ,ZZZ,ZZZ,ZZZ,ZZZ.99.
+       01 TRANSACTION-ARRAY OCCURS 54715 TIMES.
+           COPY "TRANSACTIONS.cpy".
+       01 BANK-ARRAY OCCURS 100 TIMES.
+           COPY "BANKINFO.cpy".
+       01 CURRENT-CPR PIC X(15) VALUE SPACES.
+       01 DATE-OF-TRANSACTION PIC X(10) VALUE SPACES.
+       01 TIME-OF-TRANSACTION PIC X(8) VALUE SPACES.
+
+       PROCEDURE DIVISION.
+       MAIN-PROCEDURE.
+
+           OPEN INPUT BANK-FILE
+           PERFORM UNTIL END-OF-BANK-FILE = "Y"
+               READ BANK-FILE INTO BANK-RECORD
+                   AT END
+                       MOVE "Y" TO END-OF-BANK-FILE
+                   NOT AT END
+                       MOVE BANK-RECORD TO BANK-ARRAY (IX)
+                       ADD 1 TO IX
+               END-READ
+           END-PERFORM
+           CLOSE BANK-FILE
+           MOVE 0 TO IX
+
+           SORT SORT-FILE ON ASCENDING KEY CPR OF TRANSACTION-RECORD
+               ON ASCENDING KEY TRANSACTION-DATE OF TRANSACTION-RECORD
+               INPUT PROCEDURE IS READ-TRANSACTIONS
+               OUTPUT PROCEDURE IS WRITE-SORTED-TRANSACTIONS.
+           
+           OPEN OUTPUT OUTPUT-FILE
+           MOVE 0 TO IX
+           PERFORM VARYING IX FROM 1 BY 1 UNTIL IX > 54715
+               IF CURRENT-CPR NOT EQUAL TO CPR OF TRANSACTION-ARRAY (IX)
+                   IF IX NOT EQUAL TO 1
+                       PERFORM PRINT-TOTAL-DEPOSITS-AND-WITHDRAWALS
+                   END-IF
+                   MOVE 0 TO J
+                   PERFORM VARYING J FROM 1 BY 1 UNTIL J > 100
+                       IF REG-NUMBER OF BANK-ARRAY (J) = 
+                          REG-NUMBER OF TRANSACTION-ARRAY (IX)
+                          MOVE J TO BANK-INDEX
+                          EXIT PERFORM
+                       END-IF
+                   END-PERFORM
+                   PERFORM SETUP-NEW-ACCOUNT-PRINT
+                   MOVE CPR OF TRANSACTION-ARRAY (IX) TO CURRENT-CPR
+               END-IF
+               PERFORM ADD-NEW-TRANSACTION
+               IF IX = 54715
+                   PERFORM PRINT-TOTAL-DEPOSITS-AND-WITHDRAWALS
+               END-IF
+           END-PERFORM
+       
+           CLOSE OUTPUT-FILE
+       STOP RUN.
+       
+       READ-TRANSACTIONS.
+           OPEN INPUT TRANSACTION-FILE
+           PERFORM UNTIL END-OF-TRANSACTION-FILE = "Y"
+               READ TRANSACTION-FILE
+                   AT END
+                       MOVE "Y" TO END-OF-TRANSACTION-FILE
+                   NOT AT END
+                       MOVE TRANSACTION-RECORD TO SORT-RECORD
+                       RELEASE SORT-RECORD
+               END-READ
+           END-PERFORM
+           CLOSE TRANSACTION-FILE.
+       
+       WRITE-SORTED-TRANSACTIONS.
+           MOVE "N" TO END-OF-SORT-FILE
+           MOVE 1 TO IX
+           PERFORM UNTIL END-OF-SORT-FILE = "Y"
+               RETURN SORT-FILE
+                   AT END
+                       MOVE "Y" TO END-OF-SORT-FILE
+                   NOT AT END
+                       MOVE SORT-RECORD TO TRANSACTION-ARRAY (IX)
+                       ADD 1 TO IX
+                END-RETURN
+           END-PERFORM.
+
+       SETUP-NEW-ACCOUNT-PRINT.
+           MOVE SPACES TO ACCOUNT-PRINT-INFO
+           MOVE "-------------------------------" TO ACCOUNT-PRINT-INFO
+           WRITE OUTPUT-RECORD
+           MOVE SPACES TO ACCOUNT-PRINT-INFO
+           STRING "Customer: " FUNCTION TRIM(CUSTOMER-NAME OF 
+               TRANSACTION-ARRAY (IX) TRAILING) 
+               INTO ACCOUNT-PRINT-INFO
+           END-STRING
+           WRITE OUTPUT-RECORD
+           MOVE SPACES TO ACCOUNT-PRINT-INFO
+           STRING "Address: " FUNCTION TRIM(CUSTOMER-ADDRESS OF 
+               TRANSACTION-ARRAY (IX) TRAILING) 
+               INTO ACCOUNT-PRINT-INFO
+           END-STRING
+           WRITE OUTPUT-RECORD
+           MOVE SPACES TO ACCOUNT-PRINT-INFO
+           WRITE OUTPUT-RECORD
+           WRITE OUTPUT-RECORD
+           STRING "                                                    "
+               "Registration number: " 
+               REG-NUMBER OF BANK-ARRAY (BANK-INDEX) 
+               INTO ACCOUNT-PRINT-INFO
+           END-STRING
+           WRITE OUTPUT-RECORD
+           MOVE SPACES TO ACCOUNT-PRINT-INFO
+           STRING "                                                    "
+               "Bank: " 
+               FUNCTION TRIM(BANK-NAME OF BANK-ARRAY (BANK-INDEX) 
+               TRAILING)
+               INTO ACCOUNT-PRINT-INFO
+           END-STRING
+           WRITE OUTPUT-RECORD
+           MOVE SPACES TO ACCOUNT-PRINT-INFO
+           STRING "                                                    "
+               "Bankaddress: " 
+               FUNCTION TRIM(BANK-ADDRESS OF BANK-ARRAY (BANK-INDEX) 
+               TRAILING)
+               INTO ACCOUNT-PRINT-INFO
+           END-STRING
+           WRITE OUTPUT-RECORD
+           MOVE SPACES TO ACCOUNT-PRINT-INFO
+           STRING "                                                    "
+               "Phone: " 
+               FUNCTION TRIM(PHONE-NUMBER OF BANK-ARRAY (BANK-INDEX) 
+               TRAILING)
+               INTO ACCOUNT-PRINT-INFO
+           END-STRING
+           WRITE OUTPUT-RECORD
+           MOVE SPACES TO ACCOUNT-PRINT-INFO
+           STRING "                                                    "
+               "E-mail: "
+               EMAIL-ADDRESS OF BANK-ARRAY (BANK-INDEX) 
+               INTO ACCOUNT-PRINT-INFO
+           END-STRING
+           WRITE OUTPUT-RECORD
+           MOVE SPACES TO ACCOUNT-PRINT-INFO
+           WRITE OUTPUT-RECORD
+           WRITE OUTPUT-RECORD
+           STRING "Account transactions for account number: "
+               ACCOUNT-ID OF TRANSACTION-ARRAY (IX) 
+               INTO ACCOUNT-PRINT-INFO
+           END-STRING
+           WRITE OUTPUT-RECORD
+           MOVE SPACES TO ACCOUNT-PRINT-INFO
+           WRITE OUTPUT-RECORD
+           WRITE OUTPUT-RECORD
+           STRING "Date       Time     Transaction type     Amount(DKK)"
+               "   Amount(currency)  Currency Store" 
+               INTO ACCOUNT-PRINT-INFO
+           END-STRING
+           WRITE OUTPUT-RECORD
+           MOVE SPACES TO ACCOUNT-PRINT-INFO
+           MOVE ZEROES TO TOTAL-DEPOSITS
+           MOVE ZEROES TO TOTAL-DEPOSITS-STRING
+           MOVE ZEROES TO TOTAL-WITHDRAWALS
+           MOVE ZEROES TO TOTAL-WITHDRAWALS-STRING
+           MOVE 50000 TO TOTAL-BALANCE
+           MOVE ZEROES TO TOTAL-BALANCE-STRING.
+        
+       ADD-NEW-TRANSACTION.
+           MOVE SPACES TO ACCOUNT-PRINT-INFO
+           PERFORM CONVERT-CURRENCY
+           MOVE TRANSACTION-DATE OF TRANSACTION-ARRAY (IX) (1:10) 
+           TO DATE-OF-TRANSACTION
+           MOVE TRANSACTION-DATE OF TRANSACTION-ARRAY (IX) (12:8) 
+           TO TIME-OF-TRANSACTION
+           STRING DATE-OF-TRANSACTION " " DELIMITED BY SIZE
+               TIME-OF-TRANSACTION " " DELIMITED BY SIZE
+               TRANSACTION-TYPE OF TRANSACTION-ARRAY (IX) 
+               DELIMITED BY SIZE
+               TRIMMED-DKK-NUMBER-STRING
+               " " DELIMITED BY SIZE
+               TRIMMED-CURRENCY-NUMBER-STRING
+               " " DELIMITED BY SIZE
+               CURRENCY-CODE OF TRANSACTION-ARRAY (IX)
+               " " DELIMITED BY SIZE
+               STORE OF TRANSACTION-ARRAY (IX) DELIMITED BY SPACE
+               INTO ACCOUNT-PRINT-INFO
+           END-STRING
+           WRITE OUTPUT-RECORD
+           MOVE SPACES TO ACCOUNT-PRINT-INFO
+           PERFORM ADD-TO-TOTALS.
+
+       CONVERT-CURRENCY.
+           MOVE ZEROES TO CURRENCY-NUMBER
+           MOVE ZEROES TO DKK-NUMBER
+           MOVE FUNCTION NUMVAL(AMOUNT OF TRANSACTION-ARRAY (IX))
+           TO CURRENCY-NUMBER
+           IF CURRENCY-CODE OF TRANSACTION-ARRAY (IX) = "USD"
+               COMPUTE DKK-NUMBER = CURRENCY-NUMBER * 6.8
+           ELSE 
+               IF CURRENCY-CODE OF TRANSACTION-ARRAY (IX) = "EUR"
+                   COMPUTE DKK-NUMBER = CURRENCY-NUMBER * 7.5
+               ELSE 
+                   IF CURRENCY-CODE OF TRANSACTION-ARRAY (IX) = "DKK"
+                       MOVE CURRENCY-NUMBER TO DKK-NUMBER
+                   END-IF
+               END-IF
+           END-IF
+           MOVE DKK-NUMBER TO TRIMMED-DKK-NUMBER
+           IF DKK-NUMBER IS NEGATIVE
+               STRING "-" FUNCTION TRIM(TRIMMED-DKK-NUMBER)
+               INTO TRIMMED-DKK-NUMBER-STRING
+               END-STRING
+           ELSE
+               STRING FUNCTION TRIM(TRIMMED-DKK-NUMBER)
+               INTO TRIMMED-DKK-NUMBER-STRING
+               END-STRING
+           END-IF
+           
+           MOVE CURRENCY-NUMBER TO TRIMMED-CURRENCY-NUMBER
+           IF CURRENCY-NUMBER IS NEGATIVE
+               STRING "-" FUNCTION TRIM(TRIMMED-CURRENCY-NUMBER)
+               INTO TRIMMED-CURRENCY-NUMBER-STRING
+               END-STRING
+           ELSE
+               STRING FUNCTION TRIM(TRIMMED-CURRENCY-NUMBER)
+               INTO TRIMMED-CURRENCY-NUMBER-STRING
+               END-STRING
+           END-IF.
+           
+       PRINT-TOTAL-DEPOSITS-AND-WITHDRAWALS.
+           MOVE SPACES TO ACCOUNT-PRINT-INFO
+           WRITE OUTPUT-RECORD
+           WRITE OUTPUT-RECORD
+           MOVE TOTAL-DEPOSITS TO TOTAL-DEPOSITS-STRING
+           STRING "Total deposits(DKK):    " TOTAL-DEPOSITS-STRING
+               INTO ACCOUNT-PRINT-INFO
+           END-STRING
+           WRITE OUTPUT-RECORD
+           MOVE SPACES TO ACCOUNT-PRINT-INFO
+           MOVE TOTAL-WITHDRAWALS TO TOTAL-WITHDRAWALS-STRING
+           STRING "Total withdrawals(DKK): " TOTAL-WITHDRAWALS-STRING
+               INTO ACCOUNT-PRINT-INFO
+           END-STRING
+           WRITE OUTPUT-RECORD
+           MOVE SPACES TO ACCOUNT-PRINT-INFO
+           ADD TOTAL-DEPOSITS TO TOTAL-BALANCE
+           ADD TOTAL-WITHDRAWALS TO TOTAL-BALANCE
+           MOVE TOTAL-BALANCE TO TOTAL-BALANCE-STRING
+           STRING "Total balance(DKK):     " TOTAL-BALANCE-STRING
+               INTO ACCOUNT-PRINT-INFO
+           END-STRING
+           WRITE OUTPUT-RECORD
+           MOVE SPACES TO ACCOUNT-PRINT-INFO
+           WRITE OUTPUT-RECORD
+           WRITE OUTPUT-RECORD
+           MOVE "Best regards," TO ACCOUNT-PRINT-INFO
+           WRITE OUTPUT-RECORD
+           MOVE SPACES TO ACCOUNT-PRINT-INFO
+           MOVE BANK-NAME OF BANK-ARRAY (BANK-INDEX) 
+           TO ACCOUNT-PRINT-INFO
+           WRITE OUTPUT-RECORD
+           MOVE SPACES TO ACCOUNT-PRINT-INFO.
+
+       ADD-TO-TOTALS.
+           IF DKK-NUMBER IS NEGATIVE
+               ADD DKK-NUMBER TO TOTAL-WITHDRAWALS
+           ELSE 
+               ADD DKK-NUMBER TO TOTAL-DEPOSITS
+           END-IF.
+           
+       

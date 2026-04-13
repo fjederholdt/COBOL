@@ -1,0 +1,10 @@
+*.exe
+*.py
+AccountPrint.txt
+Balances.txt
+CustomerAccount.txt
+CustomerinfoOut.txt
+outputfile.txt
+SanctionReport.txt
+ShopTransactions.txt
+YearlyCashFlow.txt

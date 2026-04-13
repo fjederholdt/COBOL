@@ -1,0 +1,6 @@
+           02 CUSTOMER-ID PIC X(10).
+           02 ACCOUNT-NUMBER PIC X(10).
+           02 ACCOUNT-TYPE PIC X(20).
+           02 ACCOUNT-BALANCE PIC ZZZZZZ9V99.
+           02 CURRENCY-CODE PIC X(3).
+           

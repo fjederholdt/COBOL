@@ -1,0 +1,9 @@
+           02 SANCTION-ID PIC X(5).
+           02 SANCTION-NAME PIC X(20).
+           02 ALIAS-1 PIC X(20).
+           02 ALIAS-2 PIC X(20).
+           02 ALIAS-3 PIC X(20).
+           02 ALIAS-4 PIC X(20).
+           02 ALIAS-5 PIC X(20).
+           02 DATE-OF-BIRTH PIC X(10).
+           02 COUNTRY-CODE PIC X(2).

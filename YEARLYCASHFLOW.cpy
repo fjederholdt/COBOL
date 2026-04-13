@@ -1,0 +1,37 @@
+           05 YEAR PIC 9(4) VALUE ZEROS.
+           05 JANUARY.
+               06 AMOUNT-IN PIC 9(15)V99 VALUE ZEROS.
+               06 AMOUNT-OUT PIC 9(15)V99 VALUE ZEROS.
+           05 FEBRUARY.
+               06 AMOUNT-IN PIC 9(15)V99 VALUE ZEROS.
+               06 AMOUNT-OUT PIC 9(15)V99 VALUE ZEROS.
+           05 MARCH.
+               06 AMOUNT-IN PIC 9(15)V99 VALUE ZEROS.
+               06 AMOUNT-OUT PIC 9(15)V99 VALUE ZEROS.
+           05 APRIL.
+               06 AMOUNT-IN PIC 9(15)V99 VALUE ZEROS.
+               06 AMOUNT-OUT PIC 9(15)V99 VALUE ZEROS.
+           05 MAY.
+               06 AMOUNT-IN PIC 9(15)V99 VALUE ZEROS.
+               06 AMOUNT-OUT PIC 9(15)V99 VALUE ZEROS.
+           05 JUNE.
+               06 AMOUNT-IN PIC 9(15)V99 VALUE ZEROS.
+               06 AMOUNT-OUT PIC 9(15)V99 VALUE ZEROS.
+           05 JULY.
+               06 AMOUNT-IN PIC 9(15)V99 VALUE ZEROS.
+               06 AMOUNT-OUT PIC 9(15)V99 VALUE ZEROS.
+           05 AUGUST.
+                06 AMOUNT-IN PIC 9(15)V99 VALUE ZEROS.
+                06 AMOUNT-OUT PIC 9(15)V99 VALUE ZEROS.
+           05 SEPTEMBER.
+               06 AMOUNT-IN PIC 9(15)V99 VALUE ZEROS.
+               06 AMOUNT-OUT PIC 9(15)V99 VALUE ZEROS.
+           05 OCTOBER.
+               06 AMOUNT-IN PIC 9(15)V99 VALUE ZEROS.
+               06 AMOUNT-OUT PIC 9(15)V99 VALUE ZEROS.
+           05 NOVEMBER.
+               06 AMOUNT-IN PIC 9(15)V99 VALUE ZEROS.
+               06 AMOUNT-OUT PIC 9(15)V99 VALUE ZEROS.
+           05 DECEMBER.
+               06 AMOUNT-IN PIC 9(15)V99 VALUE ZEROS.
+               06 AMOUNT-OUT PIC 9(15)V99 VALUE ZEROS.

@@ -1,0 +1,5 @@
+           02 CUSTOMER-ID PIC X(11).
+           02 CUSTOMER-NAME PIC X(20).
+           02 DATE-OF-BIRTH PIC X(10).
+           02 CUSTOMER-ADDRESS PIC X(30).
+           02 COUNTRY-CODE PIC X(2).
