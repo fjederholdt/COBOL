@@ -4,11 +4,12 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT TRANSACTION-FILE ASSIGN TO "Transactions.txt"
+           SELECT TRANSACTION-FILE ASSIGN 
+           TO "InputFiles/Transactions.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
-           SELECT BANK-FILE ASSIGN TO "Banks.txt"
+           SELECT BANK-FILE ASSIGN TO "InputFiles/Banks.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
-           SELECT OUTPUT-FILE ASSIGN TO "AccountPrint.txt"
+           SELECT OUTPUT-FILE ASSIGN TO "OutputFiles/AccountPrint.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
            SELECT SORT-FILE ASSIGN TO SRT.
 

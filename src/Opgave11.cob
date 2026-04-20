@@ -4,19 +4,19 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT TRANSACTION-FILE ASSIGN TO "Transactions.txt"
+           SELECT TRANSACTION-FILE ASSIGN 
+           TO "InputFiles/Transactions.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
-           SELECT BANK-FILE ASSIGN TO "Banks.txt"
+           SELECT BANK-FILE ASSIGN TO "InputFiles/Banks.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
-           SELECT OUTPUT-FILE ASSIGN TO "AccountPrint.txt"
+           SELECT OUTPUT-FILE ASSIGN TO "OutputFiles/AccountPrint.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
-           SELECT BALANCE-FILE ASSIGN TO "Balances.txt"
+           SELECT BALANCE-FILE ASSIGN TO "OutputFiles/Balances.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
-           SELECT YEARLY-CASH-FLOW-FILE ASSIGN TO "YearlyCashFlow.txt"
+           SELECT YEARLY-CASH-FLOW-FILE ASSIGN 
+           TO "OutputFiles/YearlyCashFlow.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
-           SELECT SHOP-FILE ASSIGN TO "ShopTransactions.txt"
-               ORGANIZATION IS LINE SEQUENTIAL.
-           SELECT BEST-SHOP-FILE ASSIGN TO "BestShops.txt"
+           SELECT SHOP-FILE ASSIGN TO "OutputFiles/ShopTransactions.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
            SELECT SORT-FILE ASSIGN TO SRT.
 
@@ -48,10 +48,6 @@
        FD SHOP-FILE.
        01 SHOP-RECORD.
            02 SHOP-INFO PIC X(100).
-
-       FD BEST-SHOP-FILE
-       01 BEST-SHOP-RECORD.
-           02 BEST-SHOP-INFO PIC X(100).
 
        WORKING-STORAGE SECTION.
        01 END-OF-TRANSACTION-FILE PIC X VALUE "N".
@@ -108,8 +104,6 @@
        01 INNER-SHOP-INDEX PIC 9(3) VALUE 0.
        01 SHOP-FOUND PIC X VALUE "N".
        01 TRANSACTION-COUNT-STRING PIC ZZZZZZ.
-       01 BEST-SHOPS.
-           COPY "BESTSHOPS.cpy"
 
        PROCEDURE DIVISION.
        MAIN-PROCEDURE.
@@ -853,5 +847,3 @@
                WRITE SHOP-RECORD
            END-PERFORM
            CLOSE SHOP-FILE.
-
-       CHECK-BEST-SHOPS.

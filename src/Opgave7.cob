@@ -4,9 +4,10 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT INPUT-FILE ASSIGN TO "Customerinfo.txt"
+           SELECT INPUT-FILE ASSIGN TO "InputFiles/Customerinfo.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
-           SELECT OUTPUT-FILE ASSIGN TO "CustomerinfoOut.txt"
+           SELECT OUTPUT-FILE ASSIGN 
+           TO "OutputFiles/CustomerinfoOut.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
 
        DATA DIVISION.

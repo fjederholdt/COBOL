@@ -4,13 +4,15 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT CUSTOMER-INFO-FILE ASSIGN TO "CustomerInformation.txt"
+           SELECT CUSTOMER-INFO-FILE ASSIGN 
+           TO "InputFiles/CustomerInformation.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
-           SELECT SANCTION-FILE ASSIGN TO "SanctionList.txt"
+           SELECT SANCTION-FILE ASSIGN TO "InputFiles/SanctionList.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
-           SELECT SANCTION-REPORT-FILE ASSIGN TO "SanctionReport.txt"
+           SELECT SANCTION-REPORT-FILE ASSIGN 
+           TO "OutputFiles/SanctionReport.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
-           SELECT CONFIG-FILE ASSIGN TO "Config.txt"
+           SELECT CONFIG-FILE ASSIGN TO "InputFiles/Config.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
 
        DATA DIVISION.
